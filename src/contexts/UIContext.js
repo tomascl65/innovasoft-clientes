@@ -1,6 +1,5 @@
-import React, { createContext, useReducer } from 'react';
+import { createContext, useReducer } from 'react';
 
-// Estado inicial
 const initialState = {
   snackbar: {
     open: false,
@@ -70,14 +69,11 @@ const uiReducer = (state, action) => {
   }
 };
 
-// Crear contexto
 export const UIContext = createContext();
 
-// Provider
 export const UIProvider = ({ children }) => {
   const [state, dispatch] = useReducer(uiReducer, initialState);
 
-  // Mostrar Snackbar
   const showSnackbar = (message, severity = 'info') => {
     dispatch({
       type: UI_TYPES.SHOW_SNACKBAR,
@@ -85,12 +81,10 @@ export const UIProvider = ({ children }) => {
     });
   };
 
-  // Ocultar Snackbar
   const hideSnackbar = () => {
     dispatch({ type: UI_TYPES.HIDE_SNACKBAR });
   };
 
-  // Mostrar Dialog
   const showDialog = (title, message, onConfirm) => {
     dispatch({
       type: UI_TYPES.SHOW_DIALOG,
@@ -98,7 +92,6 @@ export const UIProvider = ({ children }) => {
     });
   };
 
-  // Ocultar Dialog
   const hideDialog = () => {
     dispatch({ type: UI_TYPES.HIDE_DIALOG });
   };

@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useState, useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import {
   Container,
   Paper,
@@ -16,19 +16,19 @@ import {
   Typography,
   CircularProgress,
   Grid,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   Search as SearchIcon,
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   ArrowBack as ArrowBackIcon,
-} from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import MainLayout from '../../components/layout/MainLayout';
-import { AuthContext } from '../../contexts/AuthContext';
-import { UIContext } from '../../contexts/UIContext';
-import axiosInstance from '../../services/axios';
+} from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
+import MainLayout from "../../components/layout/MainLayout";
+import { AuthContext } from "../../contexts/AuthContext";
+import { UIContext } from "../../contexts/UIContext";
+import axiosInstance from "../../services/axios";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
   },
   buttonGroup: {
-    display: 'flex',
+    display: "flex",
     gap: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 650,
   },
   actionButtons: {
-    display: 'flex',
+    display: "flex",
     gap: theme.spacing(1),
   },
 }));
@@ -62,8 +62,8 @@ const ConsultaClientes = () => {
   const { showSnackbar, showDialog } = useContext(UIContext);
 
   const [filters, setFilters] = useState({
-    identificacion: '',
-    nombre: '',
+    identificacion: "",
+    nombre: "",
   });
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -79,7 +79,7 @@ const ConsultaClientes = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post('api/Cliente/Listado', {
+      const response = await axiosInstance.post("api/Cliente/Listado", {
         identificacion: filters.identificacion,
         nombre: filters.nombre,
         usuarioId: userId,
@@ -87,18 +87,18 @@ const ConsultaClientes = () => {
 
       setClientes(response.data || []);
       if (response.data.length === 0) {
-        showSnackbar('No se encontraron clientes', 'info');
+        showSnackbar("No se encontraron clientes", "info");
       }
     } catch (error) {
-      console.error('Error al buscar clientes:', error);
-      showSnackbar('Hubo un inconveniente con la transacción', 'error');
+      console.error("Error al buscar clientes:", error);
+      showSnackbar("Hubo un inconveniente con la transacción", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
-    history.push('/clientes/mantenimiento');
+    history.push("/clientes/mantenimiento");
   };
 
   const handleEdit = (clienteId) => {
@@ -107,23 +107,30 @@ const ConsultaClientes = () => {
 
   const handleDelete = (clienteId) => {
     showDialog(
-      'Confirmar eliminación',
-      '¿Está seguro que desea eliminar este cliente?',
+      "Confirmar eliminación",
+      "¿Está seguro que desea eliminar este cliente?",
       async () => {
         try {
           await axiosInstance.delete(`api/Cliente/Eliminar/${clienteId}`);
-          showSnackbar('Proceso realizado correctamente', 'success');
+          showSnackbar("Proceso realizado correctamente", "success");
           handleSearch(); // Recargar listado
         } catch (error) {
-          console.error('Error al eliminar cliente:', error);
-          showSnackbar('Hubo un inconveniente con la transacción', 'error');
+          console.error("Error al eliminar cliente:", error);
+          if (error.response && error.response.status === 405) {
+            showSnackbar(
+              "Error de configuración del servidor (405): Método no permitido",
+              "error",
+            );
+          } else {
+            showSnackbar("Hubo un inconveniente con la transacción", "error");
+          }
         }
-      }
+      },
     );
   };
 
   const handleBack = () => {
-    history.push('/home');
+    history.push("/home");
   };
 
   // Cargar listado inicial
@@ -194,7 +201,7 @@ const ConsultaClientes = () => {
                   onClick={handleSearch}
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : 'Buscar'}
+                  {loading ? <CircularProgress size={24} /> : "Buscar"}
                 </Button>
               </Grid>
             </Grid>

@@ -1,6 +1,5 @@
-import React, { createContext, useReducer, useEffect } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 
-// Estado inicial
 const initialState = {
   isAuthenticated: false,
   token: null,
@@ -18,7 +17,6 @@ const AUTH_TYPES = {
   FINISH_LOADING: 'FINISH_LOADING',
 };
 
-// Reducer
 const authReducer = (state, action) => {
   switch (action.type) {
     case AUTH_TYPES.LOGIN:
@@ -60,10 +58,8 @@ const authReducer = (state, action) => {
   }
 };
 
-// Crear contexto
 export const AuthContext = createContext();
 
-// Provider
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
@@ -75,7 +71,6 @@ export const AuthProvider = ({ children }) => {
     const expiration = localStorage.getItem('expiration') || sessionStorage.getItem('expiration');
 
     if (token && userId && username && expiration) {
-      // Validar si el token no ha expirado
       const expirationDate = new Date(expiration);
       const now = new Date();
 
@@ -93,7 +88,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Login
   const login = (token, userId, username, expiration, rememberMe = false) => {
     const storage = rememberMe ? localStorage : sessionStorage;
     
@@ -108,7 +102,6 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  // Logout
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');

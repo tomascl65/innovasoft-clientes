@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useState, useContext, useEffect } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import {
   Container,
   Paper,
@@ -12,26 +12,26 @@ import {
   Avatar,
   IconButton,
   CircularProgress,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   Save as SaveIcon,
   ArrowBack as ArrowBackIcon,
   PhotoCamera,
   PersonOutline,
-} from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import MainLayout from '../../components/layout/MainLayout';
-import { AuthContext } from '../../contexts/AuthContext';
-import { UIContext } from '../../contexts/UIContext';
-import axiosInstance from '../../services/axios';
+} from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
+import MainLayout from "../../components/layout/MainLayout";
+import { AuthContext } from "../../contexts/AuthContext";
+import { UIContext } from "../../contexts/UIContext";
+import axiosInstance from "../../services/axios";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(3),
   },
   header: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     marginBottom: theme.spacing(3),
   },
   avatar: {
@@ -40,12 +40,12 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   imageUpload: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     marginBottom: theme.spacing(2),
   },
   buttonGroup: {
-    display: 'flex',
+    display: "flex",
     gap: theme.spacing(2),
     marginTop: theme.spacing(3),
   },
@@ -68,35 +68,34 @@ const MantenimientoClientes = () => {
 
   // Obtener ID del cliente desde URL (si es edición)
   const searchParams = new URLSearchParams(location.search);
-  const clienteId = searchParams.get('id');
+  const clienteId = searchParams.get("id");
   const isEdit = Boolean(clienteId);
 
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellidos: '',
-    identificacion: '',
-    telefonoCelular: '',
-    otroTelefono: '',
-    direccion: '',
-    fNacimiento: '',
-    fAfiliacion: '',
-    sexo: '',
-    resenaPersonal: '',
-    imagen: '',
-    interesesId: '',
+    nombre: "",
+    apellidos: "",
+    identificacion: "",
+    telefonoCelular: "",
+    otroTelefono: "",
+    direccion: "",
+    fNacimiento: "",
+    fAfiliacion: "",
+    sexo: "",
+    resenaPersonal: "",
+    imagen: "",
+    interesesId: "",
   });
 
   // Cargar intereses
   useEffect(() => {
     const loadIntereses = async () => {
       try {
-        const response = await axiosInstance.get('api/Intereses/Listado');
-        // Verificar que response.data sea un array
+        const response = await axiosInstance.get("api/Intereses/Listado");
         const interesesData = Array.isArray(response.data) ? response.data : [];
         setIntereses(interesesData);
       } catch (error) {
-        console.error('Error al cargar intereses:', error);
-        showSnackbar('Error al cargar los intereses', 'error');
+        console.error("Error al cargar intereses:", error);
+        showSnackbar("Error al cargar los intereses", "error");
       }
     };
     loadIntereses();
@@ -108,30 +107,36 @@ const MantenimientoClientes = () => {
       const loadCliente = async () => {
         setLoading(true);
         try {
-          const response = await axiosInstance.get(`api/Cliente/Obtener/${clienteId}`);
+          const response = await axiosInstance.get(
+            `api/Cliente/Obtener/${clienteId}`,
+          );
           const cliente = response.data;
 
           setFormData({
-            nombre: cliente.nombre || '',
-            apellidos: cliente.apellidos || '',
-            identificacion: cliente.identificacion || '',
-            telefonoCelular: cliente.telefonoCelular || '',
-            otroTelefono: cliente.otroTelefono || '',
-            direccion: cliente.direccion || '',
-            fNacimiento: cliente.fNacimiento ? cliente.fNacimiento.split('T')[0] : '',
-            fAfiliacion: cliente.fAfiliacion ? cliente.fAfiliacion.split('T')[0] : '',
-            sexo: cliente.sexo || '',
-            resenaPersonal: cliente.resenaPersonal || '',
-            imagen: cliente.imagen || '',
-            interesesId: cliente.interesesId || '',
+            nombre: cliente.nombre || "",
+            apellidos: cliente.apellidos || "",
+            identificacion: cliente.identificacion || "",
+            telefonoCelular: cliente.telefonoCelular || "",
+            otroTelefono: cliente.otroTelefono || "",
+            direccion: cliente.direccion || "",
+            fNacimiento: cliente.fNacimiento
+              ? cliente.fNacimiento.split("T")[0]
+              : "",
+            fAfiliacion: cliente.fAfiliacion
+              ? cliente.fAfiliacion.split("T")[0]
+              : "",
+            sexo: cliente.sexo || "",
+            resenaPersonal: cliente.resenaPersonal || "",
+            imagen: cliente.imagen || "",
+            interesesId: cliente.interesesId || "",
           });
 
           if (cliente.imagen) {
             setImagePreview(`data:image/jpeg;base64,${cliente.imagen}`);
           }
         } catch (error) {
-          console.error('Error al cargar cliente:', error);
-          showSnackbar('Error al cargar los datos del cliente', 'error');
+          console.error("Error al cargar cliente:", error);
+          showSnackbar("Error al cargar los datos del cliente", "error");
         } finally {
           setLoading(false);
         }
@@ -150,7 +155,7 @@ const MantenimientoClientes = () => {
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
-        [name]: '',
+        [name]: "",
       }));
     }
   };
@@ -159,14 +164,14 @@ const MantenimientoClientes = () => {
     const file = e.target.files[0];
     if (file) {
       // Validar que sea una imagen
-      if (!file.type.startsWith('image/')) {
-        showSnackbar('Por favor seleccione un archivo de imagen', 'error');
+      if (!file.type.startsWith("image/")) {
+        showSnackbar("Por favor seleccione un archivo de imagen", "error");
         return;
       }
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result.split(',')[1];
+        const base64String = reader.result.split(",")[1];
         setFormData((prev) => ({
           ...prev,
           imagen: base64String,
@@ -181,61 +186,64 @@ const MantenimientoClientes = () => {
     const newErrors = {};
 
     if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
+      newErrors.nombre = "El nombre es requerido";
     } else if (formData.nombre.length > 50) {
-      newErrors.nombre = 'El nombre no debe exceder 50 caracteres';
+      newErrors.nombre = "El nombre no debe exceder 50 caracteres";
     }
 
     if (!formData.apellidos.trim()) {
-      newErrors.apellidos = 'Los apellidos son requeridos';
+      newErrors.apellidos = "Los apellidos son requeridos";
     } else if (formData.apellidos.length > 100) {
-      newErrors.apellidos = 'Los apellidos no deben exceder 100 caracteres';
+      newErrors.apellidos = "Los apellidos no deben exceder 100 caracteres";
     }
 
     if (!formData.identificacion.trim()) {
-      newErrors.identificacion = 'La identificación es requerida';
+      newErrors.identificacion = "La identificación es requerida";
     } else if (formData.identificacion.length > 20) {
-      newErrors.identificacion = 'La identificación no debe exceder 20 caracteres';
+      newErrors.identificacion =
+        "La identificación no debe exceder 20 caracteres";
     }
 
     if (!formData.telefonoCelular.trim()) {
-      newErrors.telefonoCelular = 'El teléfono celular es requerido';
+      newErrors.telefonoCelular = "El teléfono celular es requerido";
     } else if (formData.telefonoCelular.length > 20) {
-      newErrors.telefonoCelular = 'El teléfono celular no debe exceder 20 caracteres';
+      newErrors.telefonoCelular =
+        "El teléfono celular no debe exceder 20 caracteres";
     }
 
     if (!formData.otroTelefono.trim()) {
-      newErrors.otroTelefono = 'El otro teléfono es requerido';
+      newErrors.otroTelefono = "El otro teléfono es requerido";
     } else if (formData.otroTelefono.length > 20) {
-      newErrors.otroTelefono = 'El otro teléfono no debe exceder 20 caracteres';
+      newErrors.otroTelefono = "El otro teléfono no debe exceder 20 caracteres";
     }
 
     if (!formData.direccion.trim()) {
-      newErrors.direccion = 'La dirección es requerida';
+      newErrors.direccion = "La dirección es requerida";
     } else if (formData.direccion.length > 200) {
-      newErrors.direccion = 'La dirección no debe exceder 200 caracteres';
+      newErrors.direccion = "La dirección no debe exceder 200 caracteres";
     }
 
     if (!formData.fNacimiento) {
-      newErrors.fNacimiento = 'La fecha de nacimiento es requerida';
+      newErrors.fNacimiento = "La fecha de nacimiento es requerida";
     }
 
     if (!formData.fAfiliacion) {
-      newErrors.fAfiliacion = 'La fecha de afiliación es requerida';
+      newErrors.fAfiliacion = "La fecha de afiliación es requerida";
     }
 
-    if (!formData.sexo) {
-      newErrors.sexo = 'El sexo es requerido';
+    if (!formData.sexo || formData.sexo.trim() === "") {
+      newErrors.sexo = "El sexo es requerido";
     }
 
     if (!formData.resenaPersonal.trim()) {
-      newErrors.resenaPersonal = 'La reseña personal es requerida';
+      newErrors.resenaPersonal = "La reseña personal es requerida";
     } else if (formData.resenaPersonal.length > 200) {
-      newErrors.resenaPersonal = 'La reseña personal no debe exceder 200 caracteres';
+      newErrors.resenaPersonal =
+        "La reseña personal no debe exceder 200 caracteres";
     }
 
     if (!formData.interesesId) {
-      newErrors.interesesId = 'Los intereses son requeridos';
+      newErrors.interesesId = "Los intereses son requeridos";
     }
 
     return newErrors;
@@ -247,7 +255,7 @@ const MantenimientoClientes = () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      showSnackbar('Por favor corrija los errores en el formulario', 'error');
+      showSnackbar("Por favor corrija los errores en el formulario", "error");
       return;
     }
 
@@ -256,7 +264,7 @@ const MantenimientoClientes = () => {
     try {
       if (isEdit) {
         // Actualizar cliente
-        await axiosInstance.post('api/Cliente/Actualizar', {
+        const updateData = {
           id: clienteId,
           nombre: formData.nombre,
           apellidos: formData.apellidos,
@@ -264,51 +272,66 @@ const MantenimientoClientes = () => {
           celular: formData.telefonoCelular,
           otroTelefono: formData.otroTelefono,
           direccion: formData.direccion,
-          fNacimiento: formData.fNacimiento,
-          fAfiliacion: formData.fAfiliacion,
+          fNacimiento: formData.fNacimiento
+            ? formData.fNacimiento + "T00:00:00"
+            : null,
+          fAfiliacion: formData.fAfiliacion
+            ? formData.fAfiliacion + "T00:00:00"
+            : null,
           sexo: formData.sexo,
           resennaPersonal: formData.resenaPersonal,
-          imagen: formData.imagen || null,
+          imagen: formData.imagen || "",
           interesFK: formData.interesesId,
           usuarioId: userId,
-        });
+        };
+        console.log("Enviando datos de actualización:", updateData);
+        await axiosInstance.post("api/Cliente/Actualizar", updateData);
       } else {
         // Crear cliente
-        await axiosInstance.post('api/Cliente/Crear', {
+        await axiosInstance.post("api/Cliente/Crear", {
           nombre: formData.nombre,
           apellidos: formData.apellidos,
           identificacion: formData.identificacion,
-          telefonoCelular: formData.telefonoCelular,
+          celular: formData.telefonoCelular,
           otroTelefono: formData.otroTelefono,
           direccion: formData.direccion,
-          fNacimiento: formData.fNacimiento,
-          fAfiliacion: formData.fAfiliacion,
+          fNacimiento: formData.fNacimiento
+            ? formData.fNacimiento + "T00:00:00"
+            : null,
+          fAfiliacion: formData.fAfiliacion
+            ? formData.fAfiliacion + "T00:00:00"
+            : null,
           sexo: formData.sexo,
-          resenaPersonal: formData.resenaPersonal,
-          imagen: formData.imagen || null,
+          resennaPersonal: formData.resenaPersonal,
+          imagen: formData.imagen || "",
           interesFK: formData.interesesId,
           usuarioId: userId,
         });
       }
 
-      showSnackbar('Proceso realizado correctamente', 'success');
-      history.push('/clientes/consulta');
+      showSnackbar("Proceso realizado correctamente", "success");
+      history.push("/clientes/consulta");
     } catch (error) {
-      console.error('Error al guardar cliente:', error);
-      showSnackbar('Hubo un inconveniente con la transacción', 'error');
+      console.error("Error al guardar cliente:", error);
+      showSnackbar("Hubo un inconveniente con la transacción", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const handleBack = () => {
-    history.push('/clientes/consulta');
+    history.push("/clientes/consulta");
   };
 
   if (loading && isEdit) {
     return (
       <MainLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="50vh"
+        >
           <CircularProgress />
         </Box>
       </MainLayout>
@@ -329,13 +352,17 @@ const MantenimientoClientes = () => {
               </Typography>
               <input
                 accept="image/*"
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 id="image-upload"
                 type="file"
                 onChange={handleImageChange}
               />
               <label htmlFor="image-upload">
-                <IconButton color="primary" aria-label="upload picture" component="span">
+                <IconButton
+                  color="primary"
+                  aria-label="upload picture"
+                  component="span"
+                >
                   <PhotoCamera />
                 </IconButton>
                 <Typography variant="caption" color="textSecondary">
@@ -412,7 +439,8 @@ const MantenimientoClientes = () => {
                   type="date"
                   label={
                     <span>
-                      Fecha de nacimiento <span className={classes.required}>*</span>
+                      Fecha de nacimiento{" "}
+                      <span className={classes.required}>*</span>
                     </span>
                   }
                   name="fNacimiento"
@@ -434,7 +462,8 @@ const MantenimientoClientes = () => {
                   type="date"
                   label={
                     <span>
-                      Fecha de afiliación <span className={classes.required}>*</span>
+                      Fecha de afiliación{" "}
+                      <span className={classes.required}>*</span>
                     </span>
                   }
                   name="fAfiliacion"
@@ -505,7 +534,8 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Teléfono Celular <span className={classes.required}>*</span>
+                      Teléfono Celular{" "}
+                      <span className={classes.required}>*</span>
                     </span>
                   }
                   name="telefonoCelular"
@@ -585,7 +615,7 @@ const MantenimientoClientes = () => {
                 startIcon={<SaveIcon />}
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={24} /> : 'Guardar'}
+                {loading ? <CircularProgress size={24} /> : "Guardar"}
               </Button>
               <Button
                 variant="outlined"

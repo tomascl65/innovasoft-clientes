@@ -1,16 +1,15 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
-// Tema con estilo ejecutivo
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
-      main: '#0F2C4E', // Azul oscuro ejecutivo
+      main: '#0F2C4E',
       light: '#1a4166',
       dark: '#0a1f37',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#2196F3', // Azul claro
+      main: '#2196F3',
       light: '#4dabf5',
       dark: '#1769aa',
       contrastText: '#ffffff',

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Container, Typography, Button, Box, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -61,7 +61,7 @@ const Error404 = () => {
               size="large"
               onClick={handleGoBack}
             >
-              {isAuthenticated ? 'Volver al Home' : 'Ir al Login'}
+              {isAuthenticated ? 'Volver a Inicio' : 'Ir al Login'}
             </Button>
           </Box>
         </Paper>
