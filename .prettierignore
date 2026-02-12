@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Build
+build/
+dist/
+
+# Cobertura de pruebas
+coverage/
+
+# Archivos de configuración
+*.config.js
+package-lock.json
+
+# Archivos generados
+src/react-app-env.d.ts
+
+# Archivos de tipado
+*.d.ts
+
+# Archivos estáticos
+public/

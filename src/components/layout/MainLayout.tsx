@@ -1,4 +1,10 @@
 import {
+  ExitToApp as ExitToAppIcon,
+  Home as HomeIcon,
+  Menu as MenuIcon,
+  People as PeopleIcon,
+} from '@mui/icons-material';
+import {
   AppBar,
   Avatar,
   Box,
@@ -15,13 +21,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import {
-  ExitToApp as ExitToAppIcon,
-  Home as HomeIcon,
-  Menu as MenuIcon,
-  People as PeopleIcon,
-} from '@mui/icons-material';
-import { useContext, useState, ReactNode } from 'react';
+import { ReactNode, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 

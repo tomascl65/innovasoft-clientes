@@ -1,5 +1,5 @@
-import { createContext, useEffect, useReducer, ReactNode } from 'react';
-import { AuthState, AuthAction, AuthContextType } from '../types';
+import { createContext, ReactNode, useEffect, useReducer } from 'react';
+import { AuthAction, AuthContextType, AuthState } from '../types';
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     userId: number,
     username: string,
     expiration: string,
-    rememberMe: boolean = false,
+    rememberMe: boolean = false
   ) => {
     const storage = rememberMe ? localStorage : sessionStorage;
 

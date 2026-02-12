@@ -1,5 +1,5 @@
-import { Snackbar, Alert, SnackbarCloseReason } from '@mui/material';
-import { useContext, SyntheticEvent } from 'react';
+import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
+import { SyntheticEvent, useContext } from 'react';
 import { UIContext } from '../../contexts/UIContext';
 
 const GlobalSnackbar: React.FC = () => {
@@ -13,7 +13,7 @@ const GlobalSnackbar: React.FC = () => {
 
   const handleSnackbarClose = (
     event: React.SyntheticEvent | Event,
-    reason: SnackbarCloseReason,
+    reason: SnackbarCloseReason
   ) => {
     if (reason === 'clickaway') {
       return;

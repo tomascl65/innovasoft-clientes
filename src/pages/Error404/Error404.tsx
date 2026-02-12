@@ -1,5 +1,5 @@
-import { Box, Button, Container, Paper, Typography } from '@mui/material';
 import { ErrorOutline } from '@mui/icons-material';
+import { Box, Button, Container, Paper, Typography } from '@mui/material';
 import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';

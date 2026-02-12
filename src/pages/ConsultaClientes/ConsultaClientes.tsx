@@ -1,4 +1,11 @@
 import {
+  Add as AddIcon,
+  ArrowBack as ArrowBackIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material';
+import {
   Box,
   Button,
   CircularProgress,
@@ -15,21 +22,14 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  ArrowBack as ArrowBackIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Search as SearchIcon,
-} from '@mui/icons-material';
-import { useContext, useEffect, useState, ChangeEvent, useRef } from 'react';
+import { AxiosError } from 'axios';
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import { AuthContext } from '../../contexts/AuthContext';
 import { UIContext } from '../../contexts/UIContext';
 import axiosInstance from '../../services/axios';
 import { Cliente } from '../../types';
-import { AxiosError } from 'axios';
 
 interface Filters {
   identificacion: string;
@@ -123,7 +123,7 @@ const ConsultaClientes: React.FC = () => {
             showSnackbar('Hubo un inconveniente con la transacción', 'error');
           }
         }
-      },
+      }
     );
   };
 

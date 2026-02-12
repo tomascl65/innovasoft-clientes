@@ -61,7 +61,7 @@ export interface AuthContextType extends AuthState {
     userId: number,
     username: string,
     expiration: string,
-    rememberMe?: boolean,
+    rememberMe?: boolean
   ) => void;
   logout: () => void;
 }

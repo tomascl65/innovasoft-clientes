@@ -1,5 +1,5 @@
-import { createContext, useReducer, ReactNode } from 'react';
-import { UIState, UIAction, UIContextType } from '../types';
+import { createContext, ReactNode, useReducer } from 'react';
+import { UIAction, UIContextType, UIState } from '../types';
 
 const initialState: UIState = {
   snackbar: {
@@ -81,7 +81,7 @@ export const UIProvider = ({ children }: UIProviderProps) => {
 
   const showSnackbar = (
     message: string,
-    severity: 'success' | 'error' | 'warning' | 'info' = 'info',
+    severity: 'success' | 'error' | 'warning' | 'info' = 'info'
   ) => {
     dispatch({
       type: UI_TYPES.SHOW_SNACKBAR,

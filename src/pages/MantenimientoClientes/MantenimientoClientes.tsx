@@ -1,4 +1,10 @@
 import {
+  ArrowBack as ArrowBackIcon,
+  PersonOutline,
+  PhotoCamera,
+  Save as SaveIcon,
+} from '@mui/icons-material';
+import {
   Avatar,
   Box,
   Button,
@@ -11,13 +17,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  ArrowBack as ArrowBackIcon,
-  PersonOutline,
-  PhotoCamera,
-  Save as SaveIcon,
-} from '@mui/icons-material';
-import { useContext, useEffect, useState, FormEvent, ChangeEvent, useRef } from 'react';
+import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -329,7 +329,7 @@ const MantenimientoClientes: React.FC = () => {
             error.response?.data?.message ||
             error.response?.data?.error ||
             'Error desconocido'),
-        'error',
+        'error'
       );
     } finally {
       if (mountedRef.current) {

@@ -7,11 +7,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useContext, useState, useEffect, FormEvent, ChangeEvent, useRef } from 'react';
+import { AxiosError } from 'axios';
+import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { UIContext } from '../../contexts/UIContext';
 import axiosInstance from '../../services/axios';
-import { AxiosError } from 'axios';
 
 interface RegisterFormData {
   username: string;
