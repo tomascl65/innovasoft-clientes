@@ -1,18 +1,18 @@
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from './theme';
+import { ThemeProvider } from '@material-ui/core/styles';
+import { Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import ConfirmDialog from './components/common/ConfirmDialog';
+import GlobalSnackbar from './components/common/GlobalSnackbar';
+import PrivateRoute from './components/common/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
-import PrivateRoute from './components/common/PrivateRoute';
-import GlobalSnackbar from './components/common/GlobalSnackbar';
-import ConfirmDialog from './components/common/ConfirmDialog';
-import Login from './pages/Login/Login';
-import Register from './pages/Register/Register';
-import Home from './pages/Home/Home';
-import Error404 from './pages/Error404/Error404';
 import ConsultaClientes from './pages/ConsultaClientes/ConsultaClientes';
+import Error404 from './pages/Error404/Error404';
+import Home from './pages/Home/Home';
+import Login from './pages/Login/Login';
 import MantenimientoClientes from './pages/MantenimientoClientes/MantenimientoClientes';
+import Register from './pages/Register/Register';
+import theme from './theme';
 
 function App() {
   return (
@@ -29,7 +29,11 @@ function App() {
               {/* Rutas protegidas */}
               <PrivateRoute exact path="/home" component={Home} />
               <PrivateRoute exact path="/clientes/consulta" component={ConsultaClientes} />
-              <PrivateRoute exact path="/clientes/mantenimiento" component={MantenimientoClientes} />
+              <PrivateRoute
+                exact
+                path="/clientes/mantenimiento"
+                component={MantenimientoClientes}
+              />
 
               {/* Redirección inicial */}
               <Route exact path="/">

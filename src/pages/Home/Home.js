@@ -1,4 +1,4 @@
-import { Container, Typography, Paper, Box } from '@material-ui/core';
+import { Box, Container, Paper, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MainLayout from '../../components/layout/MainLayout';
 
@@ -27,12 +27,10 @@ const Home = () => {
           </Typography>
           <Box mt={3}>
             <Typography variant="body1" paragraph>
-              Utilice el menú lateral para navegar entre las diferentes secciones
-              del sistema.
+              Utilice el menú lateral para navegar entre las diferentes secciones del sistema.
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Seleccione "Consulta Clientes" para gestionar la información de los
-              clientes.
+              Seleccione "Consulta Clientes" para gestionar la información de los clientes.
             </Typography>
           </Box>
         </Paper>

@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect } from 'react';
+import { createContext, useEffect, useReducer } from 'react';
 
 const initialState = {
   isAuthenticated: false,
@@ -29,13 +29,13 @@ const authReducer = (state, action) => {
         expiration: action.payload.expiration,
         loading: false,
       };
-    
+
     case AUTH_TYPES.LOGOUT:
       return {
         ...initialState,
         loading: false,
       };
-    
+
     case AUTH_TYPES.RESTORE_SESSION:
       return {
         ...state,
@@ -46,13 +46,13 @@ const authReducer = (state, action) => {
         expiration: action.payload.expiration,
         loading: false,
       };
-    
+
     case AUTH_TYPES.FINISH_LOADING:
       return {
         ...state,
         loading: false,
       };
-    
+
     default:
       return state;
   }
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token, userId, username, expiration, rememberMe = false) => {
     const storage = rememberMe ? localStorage : sessionStorage;
-    
+
     storage.setItem('token', token);
     storage.setItem('userId', userId);
     storage.setItem('username', username);

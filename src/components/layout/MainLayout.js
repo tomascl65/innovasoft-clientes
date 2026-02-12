@@ -1,29 +1,29 @@
-import { useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
+  Avatar,
+  Box,
+  Divider,
   Drawer,
+  Hidden,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
-  Box,
-  Avatar,
-  Hidden,
-  useTheme,
+  Toolbar,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import {
-  Menu as MenuIcon,
   ExitToApp as ExitToAppIcon,
   Home as HomeIcon,
+  Menu as MenuIcon,
   People as PeopleIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;

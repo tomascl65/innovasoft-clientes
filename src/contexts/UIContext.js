@@ -34,7 +34,7 @@ const uiReducer = (state, action) => {
           severity: action.payload.severity || 'info',
         },
       };
-    
+
     case UI_TYPES.HIDE_SNACKBAR:
       return {
         ...state,
@@ -43,7 +43,7 @@ const uiReducer = (state, action) => {
           open: false,
         },
       };
-    
+
     case UI_TYPES.SHOW_DIALOG:
       return {
         ...state,
@@ -54,7 +54,7 @@ const uiReducer = (state, action) => {
           onConfirm: action.payload.onConfirm,
         },
       };
-    
+
     case UI_TYPES.HIDE_DIALOG:
       return {
         ...state,
@@ -63,7 +63,7 @@ const uiReducer = (state, action) => {
           open: false,
         },
       };
-    
+
     default:
       return state;
   }

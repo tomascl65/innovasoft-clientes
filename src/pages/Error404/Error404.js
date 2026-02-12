@@ -1,8 +1,8 @@
-import { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Container, Typography, Button, Box, Paper } from '@material-ui/core';
+import { Box, Button, Container, Paper, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ErrorOutline } from '@material-ui/icons';
+import { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,12 +55,7 @@ const Error404 = () => {
             La página que está buscando no existe o ha sido movida.
           </Typography>
           <Box mt={3}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={handleGoBack}
-            >
+            <Button variant="contained" color="primary" size="large" onClick={handleGoBack}>
               {isAuthenticated ? 'Volver a Inicio' : 'Ir al Login'}
             </Button>
           </Box>

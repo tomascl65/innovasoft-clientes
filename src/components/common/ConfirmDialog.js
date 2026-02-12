@@ -1,12 +1,12 @@
-import { useContext } from 'react';
 import {
+  Button,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
-  Button,
+  DialogTitle,
 } from '@material-ui/core';
+import { useContext } from 'react';
 import { UIContext } from '../../contexts/UIContext';
 
 const ConfirmDialog = () => {
@@ -32,9 +32,7 @@ const ConfirmDialog = () => {
     >
       <DialogTitle id="confirm-dialog-title">{dialog.title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="confirm-dialog-description">
-          {dialog.message}
-        </DialogContentText>
+        <DialogContentText id="confirm-dialog-description">{dialog.message}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel} color="primary">

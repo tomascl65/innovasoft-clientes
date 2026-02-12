@@ -1,20 +1,20 @@
-import { useState, useContext, useEffect } from 'react';
-import { useHistory, Link } from 'react-router-dom';
 import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
   Container,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
   Paper,
   TextField,
-  Button,
   Typography,
-  Box,
-  Checkbox,
-  FormControlLabel,
-  InputAdornment,
-  IconButton,
-  CircularProgress,
 } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import { UIContext } from '../../contexts/UIContext';
 import axiosInstance from '../../services/axios';
@@ -198,11 +198,7 @@ const Login = () => {
             />
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={rememberMe}
-                  onChange={handleRememberMeChange}
-                  color="primary"
-                />
+                <Checkbox checked={rememberMe} onChange={handleRememberMeChange} color="primary" />
               }
               label="Recuérdame"
             />
