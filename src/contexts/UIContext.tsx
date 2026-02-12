@@ -1,10 +1,11 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useReducer, ReactNode } from 'react';
+import { UIState, UIAction, UIContextType } from '../types';
 
-const initialState = {
+const initialState: UIState = {
   snackbar: {
     open: false,
     message: '',
-    severity: 'info', // 'success', 'error', 'warning', 'info'
+    severity: 'info',
   },
   dialog: {
     open: false,
@@ -20,18 +21,18 @@ const UI_TYPES = {
   HIDE_SNACKBAR: 'HIDE_SNACKBAR',
   SHOW_DIALOG: 'SHOW_DIALOG',
   HIDE_DIALOG: 'HIDE_DIALOG',
-};
+} as const;
 
 // Reducer
-const uiReducer = (state, action) => {
+const uiReducer = (state: UIState, action: UIAction): UIState => {
   switch (action.type) {
     case UI_TYPES.SHOW_SNACKBAR:
       return {
         ...state,
         snackbar: {
           open: true,
-          message: action.payload.message,
-          severity: action.payload.severity || 'info',
+          message: action.payload!.message!,
+          severity: action.payload!.severity || 'info',
         },
       };
 
@@ -49,9 +50,9 @@ const uiReducer = (state, action) => {
         ...state,
         dialog: {
           open: true,
-          title: action.payload.title,
-          message: action.payload.message,
-          onConfirm: action.payload.onConfirm,
+          title: action.payload!.title!,
+          message: action.payload!.message!,
+          onConfirm: action.payload!.onConfirm || null,
         },
       };
 
@@ -69,12 +70,19 @@ const uiReducer = (state, action) => {
   }
 };
 
-export const UIContext = createContext();
+export const UIContext = createContext<UIContextType | undefined>(undefined);
 
-export const UIProvider = ({ children }) => {
+interface UIProviderProps {
+  children: ReactNode;
+}
+
+export const UIProvider = ({ children }: UIProviderProps) => {
   const [state, dispatch] = useReducer(uiReducer, initialState);
 
-  const showSnackbar = (message, severity = 'info') => {
+  const showSnackbar = (
+    message: string,
+    severity: 'success' | 'error' | 'warning' | 'info' = 'info',
+  ) => {
     dispatch({
       type: UI_TYPES.SHOW_SNACKBAR,
       payload: { message, severity },
@@ -85,7 +93,7 @@ export const UIProvider = ({ children }) => {
     dispatch({ type: UI_TYPES.HIDE_SNACKBAR });
   };
 
-  const showDialog = (title, message, onConfirm) => {
+  const showDialog = (title: string, message: string, onConfirm?: () => void) => {
     dispatch({
       type: UI_TYPES.SHOW_DIALOG,
       payload: { title, message, onConfirm },

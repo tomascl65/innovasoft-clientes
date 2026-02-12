@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: 'https://pruebareactjs.test-class.com/Api/',
@@ -9,16 +9,16 @@ const axiosInstance = axios.create({
 
 // Interceptor de solicitud para agregar el token
 axiosInstance.interceptors.request.use(
-  (config) => {
+  (config: AxiosRequestConfig) => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
-    if (token) {
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   },
 );
@@ -28,21 +28,23 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  (error: AxiosError) => {
     if (error.response) {
       // Error 401 - No autorizado, limpiar sesión
       // Excluir la ruta de login: un 401 ahí significa credenciales incorrectas,
       // no una sesión expirada, así que no debe redirigir.
-      const requestUrl = error.config?.url || '';
-      const isLoginRequest = requestUrl.toLowerCase().includes('authenticate/login');
+      const requestUrl = (error.config?.url || '').toLowerCase();
+      const isLoginRequest = requestUrl.includes('authenticate/login');
 
       if (error.response.status === 401 && !isLoginRequest) {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
+        localStorage.removeItem('expiration');
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('userId');
         sessionStorage.removeItem('username');
+        sessionStorage.removeItem('expiration');
         window.location.href = '/login';
       }
 

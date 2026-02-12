@@ -1,6 +1,7 @@
-import { createContext, useEffect, useReducer } from 'react';
+import { createContext, useEffect, useReducer, ReactNode } from 'react';
+import { AuthState, AuthAction, AuthContextType } from '../types';
 
-const initialState = {
+const initialState: AuthState = {
   isAuthenticated: false,
   token: null,
   userId: null,
@@ -15,18 +16,18 @@ const AUTH_TYPES = {
   LOGOUT: 'LOGOUT',
   RESTORE_SESSION: 'RESTORE_SESSION',
   FINISH_LOADING: 'FINISH_LOADING',
-};
+} as const;
 
-const authReducer = (state, action) => {
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case AUTH_TYPES.LOGIN:
       return {
         ...state,
         isAuthenticated: true,
-        token: action.payload.token,
-        userId: action.payload.userId,
-        username: action.payload.username,
-        expiration: action.payload.expiration,
+        token: action.payload!.token,
+        userId: action.payload!.userId,
+        username: action.payload!.username,
+        expiration: action.payload!.expiration,
         loading: false,
       };
 
@@ -40,10 +41,10 @@ const authReducer = (state, action) => {
       return {
         ...state,
         isAuthenticated: true,
-        token: action.payload.token,
-        userId: action.payload.userId,
-        username: action.payload.username,
-        expiration: action.payload.expiration,
+        token: action.payload!.token,
+        userId: action.payload!.userId,
+        username: action.payload!.username,
+        expiration: action.payload!.expiration,
         loading: false,
       };
 
@@ -58,10 +59,28 @@ const authReducer = (state, action) => {
   }
 };
 
-export const AuthContext = createContext();
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+
+  // Función de logout definida antes de usarla en useEffect
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username');
+    localStorage.removeItem('expiration');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('expiration');
+
+    dispatch({ type: AUTH_TYPES.LOGOUT });
+  };
 
   // Restaurar sesión al cargar la aplicación
   useEffect(() => {
@@ -77,7 +96,7 @@ export const AuthProvider = ({ children }) => {
       if (expirationDate > now) {
         dispatch({
           type: AUTH_TYPES.RESTORE_SESSION,
-          payload: { token, userId, username, expiration },
+          payload: { token, userId: parseInt(userId), username, expiration },
         });
       } else {
         // Token expirado, limpiar
@@ -86,13 +105,20 @@ export const AuthProvider = ({ children }) => {
     } else {
       dispatch({ type: AUTH_TYPES.FINISH_LOADING });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const login = (token, userId, username, expiration, rememberMe = false) => {
+  const login = (
+    token: string,
+    userId: number,
+    username: string,
+    expiration: string,
+    rememberMe: boolean = false,
+  ) => {
     const storage = rememberMe ? localStorage : sessionStorage;
 
     storage.setItem('token', token);
-    storage.setItem('userId', userId);
+    storage.setItem('userId', userId.toString());
     storage.setItem('username', username);
     storage.setItem('expiration', expiration);
 
@@ -100,19 +126,6 @@ export const AuthProvider = ({ children }) => {
       type: AUTH_TYPES.LOGIN,
       payload: { token, userId, username, expiration },
     });
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('username');
-    localStorage.removeItem('expiration');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('username');
-    sessionStorage.removeItem('expiration');
-
-    dispatch({ type: AUTH_TYPES.LOGOUT });
   };
 
   return (

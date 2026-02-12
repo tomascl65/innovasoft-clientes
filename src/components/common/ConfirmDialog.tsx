@@ -5,12 +5,18 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useContext } from 'react';
 import { UIContext } from '../../contexts/UIContext';
 
-const ConfirmDialog = () => {
-  const { dialog, hideDialog } = useContext(UIContext);
+const ConfirmDialog: React.FC = () => {
+  const uiContext = useContext(UIContext);
+
+  if (!uiContext) {
+    throw new Error('ConfirmDialog must be used within a UIProvider');
+  }
+
+  const { dialog, hideDialog } = uiContext;
 
   const handleConfirm = () => {
     if (dialog.onConfirm) {

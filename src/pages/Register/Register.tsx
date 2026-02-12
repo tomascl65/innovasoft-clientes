@@ -6,63 +6,69 @@ import {
   Paper,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useContext, useState } from 'react';
+} from '@mui/material';
+import { useContext, useState, useEffect, FormEvent, ChangeEvent, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { UIContext } from '../../contexts/UIContext';
 import axiosInstance from '../../services/axios';
+import { AxiosError } from 'axios';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.palette.background.default,
-  },
-  paper: {
-    padding: theme.spacing(4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    maxWidth: 400,
-    width: '100%',
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  link: {
-    textDecoration: 'none',
-    color: theme.palette.primary.main,
-  },
-}));
+interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+}
 
-const Register = () => {
-  const classes = useStyles();
+interface FormErrors {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
+interface RegisterResponse {
+  status: string;
+  message?: string;
+}
+
+interface ErrorResponse {
+  message?: string;
+}
+
+const Register: React.FC = () => {
   const history = useHistory();
-  const { showSnackbar } = useContext(UIContext);
+  const uiContext = useContext(UIContext);
 
-  const [formData, setFormData] = useState({
+  if (!uiContext) {
+    throw new Error('Register must be used within a UIProvider');
+  }
+
+  const { showSnackbar } = uiContext;
+
+  const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
     email: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const handleChange = (e) => {
+  // Flag para evitar actualizaciones de estado en componente desmontado
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
     // Limpiar error del campo al escribir
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({
         ...prev,
         [name]: '',
@@ -70,19 +76,19 @@ const Register = () => {
     }
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = (password: string): boolean => {
     // Mínimo 10 caracteres, al menos 1 mayúscula, 1 minúscula, 1 número
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{10,20}$/;
     return passwordRegex.test(password);
   };
 
-  const validate = () => {
-    const newErrors = {};
+  const validate = (): FormErrors => {
+    const newErrors: FormErrors = {};
 
     if (!formData.username.trim()) {
       newErrors.username = 'El nombre de usuario es requerido';
@@ -104,7 +110,7 @@ const Register = () => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const validationErrors = validate();
@@ -116,7 +122,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post('api/Authenticate/register', {
+      const response = await axiosInstance.post<RegisterResponse>('api/Authenticate/register', {
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -127,11 +133,12 @@ const Register = () => {
         history.push('/login');
       }
     } catch (error) {
-      console.error('Error en registro:', error);
-      if (error.response && error.response.data) {
-        const rawMessage = error.response.data.message || '';
+      const axiosError = error as AxiosError<ErrorResponse>;
+      console.error('Error en registro:', axiosError);
+      if (axiosError.response && axiosError.response.data) {
+        const rawMessage = axiosError.response.data.message || '';
         // Traducir errores del backend a español
-        let message;
+        let message: string;
         if (rawMessage.includes('PasswordTooShort')) {
           message = 'La contraseña es muy corta. Debe tener al menos 10 caracteres';
         } else if (rawMessage.includes('DuplicateUserName')) {
@@ -154,18 +161,45 @@ const Register = () => {
         showSnackbar('Hubo un inconveniente con la transacción', 'error');
       }
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
   return (
-    <div className={classes.container}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'background.default',
+      }}
+    >
       <Container maxWidth="xs">
-        <Paper className={classes.paper} elevation={3}>
+        <Paper
+          elevation={3}
+          sx={{
+            padding: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            maxWidth: 400,
+            width: '100%',
+          }}
+        >
           <Typography component="h1" variant="h5">
             Registro
           </Typography>
-          <form className={classes.form} onSubmit={handleSubmit}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              width: '100%',
+              marginTop: 1,
+            }}
+          >
             <TextField
               variant="outlined"
               margin="normal"
@@ -215,20 +249,26 @@ const Register = () => {
               fullWidth
               variant="contained"
               color="primary"
-              className={classes.submit}
               disabled={loading}
+              sx={{ margin: (theme) => theme.spacing(3, 0, 2) }}
             >
               {loading ? <CircularProgress size={24} /> : 'REGISTRARME'}
             </Button>
             <Box textAlign="center">
-              <Link to="/login" className={classes.link}>
-                ¿Ya tiene una cuenta? Inicie sesión
+              <Link
+                to="/login"
+                style={{
+                  textDecoration: 'none',
+                  color: 'inherit',
+                }}
+              >
+                <Box sx={{ color: 'primary.main' }}>¿Ya tiene una cuenta? Inicie sesión</Box>
               </Link>
             </Box>
-          </form>
+          </Box>
         </Paper>
       </Container>
-    </div>
+    </Box>
   );
 };
 

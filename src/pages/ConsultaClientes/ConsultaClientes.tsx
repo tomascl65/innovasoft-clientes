@@ -14,61 +14,57 @@ import {
   TableRow,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
 import {
   Add as AddIcon,
   ArrowBack as ArrowBackIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
   Search as SearchIcon,
-} from '@material-ui/icons';
-import { useContext, useEffect, useState } from 'react';
+} from '@mui/icons-material';
+import { useContext, useEffect, useState, ChangeEvent, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import { AuthContext } from '../../contexts/AuthContext';
 import { UIContext } from '../../contexts/UIContext';
 import axiosInstance from '../../services/axios';
+import { Cliente } from '../../types';
+import { AxiosError } from 'axios';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(3),
-    marginBottom: theme.spacing(2),
-  },
-  header: {
-    marginBottom: theme.spacing(3),
-  },
-  filterSection: {
-    marginBottom: theme.spacing(3),
-  },
-  buttonGroup: {
-    display: 'flex',
-    gap: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 650,
-  },
-  actionButtons: {
-    display: 'flex',
-    gap: theme.spacing(1),
-  },
-}));
+interface Filters {
+  identificacion: string;
+  nombre: string;
+}
 
-const ConsultaClientes = () => {
-  const classes = useStyles();
+const ConsultaClientes: React.FC = () => {
   const history = useHistory();
-  const { userId } = useContext(AuthContext);
-  const { showSnackbar, showDialog } = useContext(UIContext);
+  const authContext = useContext(AuthContext);
+  const uiContext = useContext(UIContext);
 
-  const [filters, setFilters] = useState({
+  if (!authContext || !uiContext) {
+    throw new Error('ConsultaClientes must be used within AuthProvider and UIProvider');
+  }
+
+  const { userId } = authContext;
+  const { showSnackbar, showDialog } = uiContext;
+
+  const [filters, setFilters] = useState<Filters>({
     identificacion: '',
     nombre: '',
   });
-  const [clientes, setClientes] = useState([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const handleFilterChange = (e) => {
+  // Flag para evitar actualizaciones de estado en componente desmontado
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
       ...prev,
@@ -79,21 +75,25 @@ const ConsultaClientes = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post('api/Cliente/Listado', {
+      const response = await axiosInstance.post<Cliente[]>('api/Cliente/Listado', {
         identificacion: filters.identificacion,
         nombre: filters.nombre,
         usuarioId: userId,
       });
 
-      setClientes(response.data || []);
-      if (response.data.length === 0) {
-        showSnackbar('No se encontraron clientes', 'info');
+      if (mountedRef.current) {
+        setClientes(response.data || []);
+        if (response.data.length === 0) {
+          showSnackbar('No se encontraron clientes', 'info');
+        }
       }
     } catch (error) {
       console.error('Error al buscar clientes:', error);
       showSnackbar('Hubo un inconveniente con la transacción', 'error');
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -101,11 +101,11 @@ const ConsultaClientes = () => {
     history.push('/clientes/mantenimiento');
   };
 
-  const handleEdit = (clienteId) => {
+  const handleEdit = (clienteId: number) => {
     history.push(`/clientes/mantenimiento?id=${clienteId}`);
   };
 
-  const handleDelete = (clienteId) => {
+  const handleDelete = (clienteId: number) => {
     showDialog(
       'Confirmar eliminación',
       '¿Está seguro que desea eliminar este cliente?',
@@ -115,8 +115,9 @@ const ConsultaClientes = () => {
           showSnackbar('Proceso realizado correctamente', 'success');
           handleSearch(); // Recargar listado
         } catch (error) {
-          console.error('Error al eliminar cliente:', error);
-          if (error.response && error.response.status === 405) {
+          const axiosError = error as AxiosError;
+          console.error('Error al eliminar cliente:', axiosError);
+          if (axiosError.response && axiosError.response.status === 405) {
             showSnackbar('Error de configuración del servidor (405): Método no permitido', 'error');
           } else {
             showSnackbar('Hubo un inconveniente con la transacción', 'error');
@@ -139,14 +140,25 @@ const ConsultaClientes = () => {
   return (
     <MainLayout>
       <Container maxWidth="lg">
-        <Paper className={classes.paper}>
-          <Box className={classes.header}>
+        <Paper
+          sx={{
+            padding: 3,
+            marginBottom: 2,
+          }}
+        >
+          <Box sx={{ marginBottom: 3 }}>
             <Typography variant="h4" color="primary">
               Consulta de clientes
             </Typography>
           </Box>
 
-          <Box className={classes.buttonGroup}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              marginBottom: 2,
+            }}
+          >
             <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleAdd}>
               Agregar
             </Button>
@@ -160,7 +172,7 @@ const ConsultaClientes = () => {
             </Button>
           </Box>
 
-          <Box className={classes.filterSection}>
+          <Box sx={{ marginBottom: 3 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={5}>
                 <TextField
@@ -200,7 +212,7 @@ const ConsultaClientes = () => {
           </Box>
 
           <TableContainer>
-            <Table className={classes.table}>
+            <Table sx={{ minWidth: 650 }}>
               <TableHead>
                 <TableRow>
                   <TableCell>
@@ -229,7 +241,7 @@ const ConsultaClientes = () => {
                         {cliente.nombre} {cliente.apellidos}
                       </TableCell>
                       <TableCell align="center">
-                        <div className={classes.actionButtons}>
+                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                           <IconButton
                             color="primary"
                             size="small"
@@ -244,7 +256,7 @@ const ConsultaClientes = () => {
                           >
                             <DeleteIcon />
                           </IconButton>
-                        </div>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))

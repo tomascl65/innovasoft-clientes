@@ -1,6 +1,7 @@
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
 
-const theme = createTheme({
+const theme: Theme = createTheme({
   palette: {
     primary: {
       main: '#0F2C4E',
@@ -99,23 +100,27 @@ const theme = createTheme({
     '0px 11px 14px -7px rgba(0,0,0,0.08),0px 23px 36px 3px rgba(0,0,0,0.06),0px 9px 44px 8px rgba(0,0,0,0.04)',
     '0px 11px 15px -7px rgba(0,0,0,0.08),0px 24px 38px 3px rgba(0,0,0,0.06),0px 9px 46px 8px rgba(0,0,0,0.04)',
   ],
-  overrides: {
+  components: {
     MuiButton: {
-      root: {
-        textTransform: 'none',
-        fontWeight: 500,
-      },
-      contained: {
-        boxShadow: 'none',
-        '&:hover': {
-          boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.08)',
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 500,
+        },
+        contained: {
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.08)',
+          },
         },
       },
     },
     MuiPaper: {
-      elevation1: {
-        boxShadow:
-          '0px 2px 1px -1px rgba(0,0,0,0.08),0px 1px 1px 0px rgba(0,0,0,0.06),0px 1px 3px 0px rgba(0,0,0,0.04)',
+      styleOverrides: {
+        elevation1: {
+          boxShadow:
+            '0px 2px 1px -1px rgba(0,0,0,0.08),0px 1px 1px 0px rgba(0,0,0,0.06),0px 1px 3px 0px rgba(0,0,0,0.04)',
+        },
       },
     },
   },

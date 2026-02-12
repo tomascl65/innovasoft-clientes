@@ -10,68 +10,83 @@ import {
   Paper,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   PersonOutline,
   PhotoCamera,
   Save as SaveIcon,
-} from '@material-ui/icons';
-import { useContext, useEffect, useState } from 'react';
+} from '@mui/icons-material';
+import { useContext, useEffect, useState, FormEvent, ChangeEvent, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import { AuthContext } from '../../contexts/AuthContext';
 import { UIContext } from '../../contexts/UIContext';
 import axiosInstance from '../../services/axios';
+import { Cliente, Interes } from '../../types';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(3),
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(3),
-  },
-  avatar: {
-    width: theme.spacing(12),
-    height: theme.spacing(12),
-    marginRight: theme.spacing(2),
-  },
-  imageUpload: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-  },
-  buttonGroup: {
-    display: 'flex',
-    gap: theme.spacing(2),
-    marginTop: theme.spacing(3),
-  },
-  required: {
-    color: theme.palette.error.main,
-  },
-}));
+interface ClienteFormData {
+  nombre: string;
+  apellidos: string;
+  identificacion: string;
+  telefonoCelular: string;
+  otroTelefono: string;
+  direccion: string;
+  fNacimiento: string;
+  fAfiliacion: string;
+  sexo: string;
+  resenaPersonal: string;
+  imagen: string;
+  interesesId: string;
+}
 
-const MantenimientoClientes = () => {
-  const classes = useStyles();
+interface FormErrors {
+  nombre?: string;
+  apellidos?: string;
+  identificacion?: string;
+  telefonoCelular?: string;
+  otroTelefono?: string;
+  direccion?: string;
+  fNacimiento?: string;
+  fAfiliacion?: string;
+  sexo?: string;
+  resenaPersonal?: string;
+  interesesId?: string;
+}
+
+const MantenimientoClientes: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
-  const { userId } = useContext(AuthContext);
-  const { showSnackbar } = useContext(UIContext);
+  const authContext = useContext(AuthContext);
+  const uiContext = useContext(UIContext);
+
+  if (!authContext || !uiContext) {
+    throw new Error('MantenimientoClientes must be used within AuthProvider and UIProvider');
+  }
+
+  const { userId } = authContext;
+  const { showSnackbar } = uiContext;
 
   const [loading, setLoading] = useState(false);
-  const [intereses, setIntereses] = useState([]);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [errors, setErrors] = useState({});
+  const [intereses, setIntereses] = useState<Interes[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  // Flag para evitar actualizaciones de estado en componente desmontado
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // Obtener ID del cliente desde URL (si es edición)
   const searchParams = new URLSearchParams(location.search);
   const clienteId = searchParams.get('id');
   const isEdit = Boolean(clienteId);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ClienteFormData>({
     nombre: '',
     apellidos: '',
     identificacion: '',
@@ -90,9 +105,11 @@ const MantenimientoClientes = () => {
   useEffect(() => {
     const loadIntereses = async () => {
       try {
-        const response = await axiosInstance.get('api/Intereses/Listado');
+        const response = await axiosInstance.get<Interes[]>('api/Intereses/Listado');
         const interesesData = Array.isArray(response.data) ? response.data : [];
-        setIntereses(interesesData);
+        if (mountedRef.current) {
+          setIntereses(interesesData);
+        }
       } catch (error) {
         console.error('Error al cargar intereses:', error);
         showSnackbar('Error al cargar los intereses', 'error');
@@ -107,46 +124,50 @@ const MantenimientoClientes = () => {
       const loadCliente = async () => {
         setLoading(true);
         try {
-          const response = await axiosInstance.get(`api/Cliente/Obtener/${clienteId}`);
+          const response = await axiosInstance.get<Cliente>(`api/Cliente/Obtener/${clienteId}`);
           const cliente = response.data;
 
-          setFormData({
-            nombre: cliente.nombre || '',
-            apellidos: cliente.apellidos || '',
-            identificacion: cliente.identificacion || '',
-            telefonoCelular: cliente.telefonoCelular || '',
-            otroTelefono: cliente.otroTelefono || '',
-            direccion: cliente.direccion || '',
-            fNacimiento: cliente.fNacimiento ? cliente.fNacimiento.split('T')[0] : '',
-            fAfiliacion: cliente.fAfiliacion ? cliente.fAfiliacion.split('T')[0] : '',
-            sexo: cliente.sexo || '',
-            resenaPersonal: cliente.resenaPersonal || '',
-            imagen: cliente.imagen || '',
-            interesesId: cliente.interesesId || '',
-          });
+          if (mountedRef.current) {
+            setFormData({
+              nombre: cliente.nombre || '',
+              apellidos: cliente.apellidos || '',
+              identificacion: cliente.identificacion || '',
+              telefonoCelular: cliente.telefonoCelular || '',
+              otroTelefono: cliente.otroTelefono || '',
+              direccion: cliente.direccion || '',
+              fNacimiento: cliente.fNacimiento ? cliente.fNacimiento.split('T')[0] : '',
+              fAfiliacion: cliente.fAfiliacion ? cliente.fAfiliacion.split('T')[0] : '',
+              sexo: cliente.sexo || '',
+              resenaPersonal: cliente.resenaPersonal || '',
+              imagen: cliente.imagen || '',
+              interesesId: cliente.interesesId?.toString() || '',
+            });
 
-          if (cliente.imagen) {
-            setImagePreview(`data:image/jpeg;base64,${cliente.imagen}`);
+            if (cliente.imagen) {
+              setImagePreview(`data:image/jpeg;base64,${cliente.imagen}`);
+            }
           }
         } catch (error) {
           console.error('Error al cargar cliente:', error);
           showSnackbar('Error al cargar los datos del cliente', 'error');
         } finally {
-          setLoading(false);
+          if (mountedRef.current) {
+            setLoading(false);
+          }
         }
       };
       loadCliente();
     }
   }, [isEdit, clienteId, showSnackbar]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
     // Limpiar error del campo
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({
         ...prev,
         [name]: '',
@@ -154,8 +175,8 @@ const MantenimientoClientes = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       // Validar que sea una imagen
       if (!file.type.startsWith('image/')) {
@@ -165,19 +186,20 @@ const MantenimientoClientes = () => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result.split(',')[1];
+        const result = reader.result as string;
+        const base64String = result.split(',')[1];
         setFormData((prev) => ({
           ...prev,
           imagen: base64String,
         }));
-        setImagePreview(reader.result);
+        setImagePreview(result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const validate = () => {
-    const newErrors = {};
+  const validate = (): FormErrors => {
+    const newErrors: FormErrors = {};
 
     if (!formData.nombre.trim()) {
       newErrors.nombre = 'El nombre es requerido';
@@ -240,7 +262,7 @@ const MantenimientoClientes = () => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const validationErrors = validate();
@@ -268,7 +290,7 @@ const MantenimientoClientes = () => {
           sexo: formData.sexo,
           resennaPersonal: formData.resenaPersonal,
           imagen: formData.imagen || '',
-          interesFK: formData.interesesId,
+          interesFK: formData.interesesId, // Mantener como string (uuid)
           usuarioId: userId,
         };
         console.log('Enviando datos de actualización:', updateData);
@@ -287,18 +309,32 @@ const MantenimientoClientes = () => {
           sexo: formData.sexo,
           resennaPersonal: formData.resenaPersonal,
           imagen: formData.imagen || '',
-          interesFK: formData.interesesId,
+          interesFK: formData.interesesId, // Mantener como string (uuid)
           usuarioId: userId,
         });
       }
 
       showSnackbar('Proceso realizado correctamente', 'success');
       history.push('/clientes/consulta');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al guardar cliente:', error);
-      showSnackbar('Hubo un inconveniente con la transacción', 'error');
+      // Mostrar detalles de la respuesta del servidor para diagnóstico
+      if (error.response) {
+        console.error('Respuesta del servidor:', JSON.stringify(error.response.data, null, 2));
+        console.error('Status:', error.response.status);
+      }
+      showSnackbar(
+        'Error: ' +
+          (error.response?.data?.title ||
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            'Error desconocido'),
+        'error',
+      );
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -319,9 +355,22 @@ const MantenimientoClientes = () => {
   return (
     <MainLayout>
       <Container maxWidth="md">
-        <Paper className={classes.paper}>
-          <Box className={classes.header}>
-            <Avatar className={classes.avatar} src={imagePreview}>
+        <Paper sx={{ padding: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: 3,
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 96,
+                height: 96,
+                marginRight: 2,
+              }}
+              src={imagePreview}
+            >
               {!imagePreview && <PersonOutline style={{ fontSize: 60 }} />}
             </Avatar>
             <Box>
@@ -339,14 +388,14 @@ const MantenimientoClientes = () => {
                 <IconButton color="primary" aria-label="upload picture" component="span">
                   <PhotoCamera />
                 </IconButton>
-                <Typography variant="caption" color="textSecondary">
+                <Typography variant="caption" color="text.secondary">
                   Cargar imagen (Opcional)
                 </Typography>
               </label>
             </Box>
           </Box>
 
-          <form onSubmit={handleSubmit}>
+          <Box component="form" onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               {/* Identificación */}
               <Grid item xs={12} sm={6}>
@@ -355,7 +404,7 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Identificación <span className={classes.required}>*</span>
+                      Identificación <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="identificacion"
@@ -374,7 +423,7 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Nombre <span className={classes.required}>*</span>
+                      Nombre <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="nombre"
@@ -393,7 +442,7 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Apellidos <span className={classes.required}>*</span>
+                      Apellidos <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="apellidos"
@@ -413,7 +462,7 @@ const MantenimientoClientes = () => {
                   type="date"
                   label={
                     <span>
-                      Fecha de nacimiento <span className={classes.required}>*</span>
+                      Fecha de nacimiento <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="fNacimiento"
@@ -435,7 +484,7 @@ const MantenimientoClientes = () => {
                   type="date"
                   label={
                     <span>
-                      Fecha de afiliación <span className={classes.required}>*</span>
+                      Fecha de afiliación <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="fAfiliacion"
@@ -457,7 +506,7 @@ const MantenimientoClientes = () => {
                   select
                   label={
                     <span>
-                      Género <span className={classes.required}>*</span>
+                      Género <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="sexo"
@@ -480,7 +529,7 @@ const MantenimientoClientes = () => {
                   select
                   label={
                     <span>
-                      Interés <span className={classes.required}>*</span>
+                      Interés <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="interesesId"
@@ -492,7 +541,7 @@ const MantenimientoClientes = () => {
                   <MenuItem value="">Seleccione</MenuItem>
                   {Array.isArray(intereses) &&
                     intereses.map((interes) => (
-                      <MenuItem key={interes.id} value={interes.id}>
+                      <MenuItem key={interes.id} value={interes.id.toString()}>
                         {interes.descripcion}
                       </MenuItem>
                     ))}
@@ -506,7 +555,7 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Teléfono Celular <span className={classes.required}>*</span>
+                      Teléfono Celular <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="telefonoCelular"
@@ -525,7 +574,7 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Teléfono Otro <span className={classes.required}>*</span>
+                      Teléfono Otro <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="otroTelefono"
@@ -544,7 +593,7 @@ const MantenimientoClientes = () => {
                   fullWidth
                   label={
                     <span>
-                      Dirección <span className={classes.required}>*</span>
+                      Dirección <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="direccion"
@@ -565,7 +614,7 @@ const MantenimientoClientes = () => {
                   rows={4}
                   label={
                     <span>
-                      Reseña <span className={classes.required}>*</span>
+                      Reseña <span style={{ color: 'error.main' }}>*</span>
                     </span>
                   }
                   name="resenaPersonal"
@@ -578,7 +627,13 @@ const MantenimientoClientes = () => {
               </Grid>
             </Grid>
 
-            <Box className={classes.buttonGroup}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 2,
+                marginTop: 3,
+              }}
+            >
               <Button
                 type="submit"
                 variant="contained"
@@ -598,7 +653,7 @@ const MantenimientoClientes = () => {
                 Regresar
               </Button>
             </Box>
-          </form>
+          </Box>
         </Paper>
       </Container>
     </MainLayout>

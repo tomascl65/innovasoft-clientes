@@ -1,5 +1,5 @@
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
 import { Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import ConfirmDialog from './components/common/ConfirmDialog';
 import GlobalSnackbar from './components/common/GlobalSnackbar';
