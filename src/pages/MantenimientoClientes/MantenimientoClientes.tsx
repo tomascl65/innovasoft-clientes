@@ -17,6 +17,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { AxiosError } from 'axios';
 import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
@@ -293,7 +294,7 @@ const MantenimientoClientes: React.FC = () => {
           interesFK: formData.interesesId, // Mantener como string (uuid)
           usuarioId: userId,
         };
-        console.log('Enviando datos de actualización:', updateData);
+        // console.log('Enviando datos de actualización:', updateData);
         await axiosInstance.post('api/Cliente/Actualizar', updateData);
       } else {
         // Crear cliente
@@ -316,9 +317,9 @@ const MantenimientoClientes: React.FC = () => {
 
       showSnackbar('Proceso realizado correctamente', 'success');
       history.push('/clientes/consulta');
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AxiosError<{ title?: string; message?: string; error?: string }>;
       console.error('Error al guardar cliente:', error);
-      // Mostrar detalles de la respuesta del servidor para diagnóstico
       if (error.response) {
         console.error('Respuesta del servidor:', JSON.stringify(error.response.data, null, 2));
         console.error('Status:', error.response.status);
