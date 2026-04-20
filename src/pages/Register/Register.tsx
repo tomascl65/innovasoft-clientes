@@ -83,7 +83,7 @@ const Register: React.FC = () => {
 
   const validatePassword = (password: string): boolean => {
     // Mínimo 10 caracteres, al menos 1 mayúscula, 1 minúscula, 1 número
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{10,20}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,20}$/;
     return passwordRegex.test(password);
   };
 

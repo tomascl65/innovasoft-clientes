@@ -142,12 +142,16 @@ const ConsultaClientes: React.FC = () => {
       <Container maxWidth="lg">
         <Paper
           sx={{
-            padding: 3,
+            padding: { xs: 2, sm: 3 },
             marginBottom: 2,
           }}
         >
           <Box sx={{ marginBottom: 3 }}>
-            <Typography variant="h4" color="primary">
+            <Typography
+              variant="h4"
+              color="primary"
+              sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' } }}
+            >
               Consulta de clientes
             </Typography>
           </Box>
@@ -155,11 +159,18 @@ const ConsultaClientes: React.FC = () => {
           <Box
             sx={{
               display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
               gap: 2,
               marginBottom: 2,
             }}
           >
-            <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleAdd}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleAdd}
+              fullWidth={window.innerWidth < 600}
+            >
               Agregar
             </Button>
             <Button
@@ -174,7 +185,7 @@ const ConsultaClientes: React.FC = () => {
 
           <Box sx={{ marginBottom: 3 }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={12} sm={6} md={5}>
                 <TextField
                   fullWidth
                   label="Nombre"
@@ -185,7 +196,7 @@ const ConsultaClientes: React.FC = () => {
                   onChange={handleFilterChange}
                 />
               </Grid>
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={12} sm={6} md={5}>
                 <TextField
                   fullWidth
                   label="Identificación"
@@ -196,7 +207,7 @@ const ConsultaClientes: React.FC = () => {
                   onChange={handleFilterChange}
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid item xs={12} md={2}>
                 <Button
                   fullWidth
                   variant="contained"
@@ -211,8 +222,8 @@ const ConsultaClientes: React.FC = () => {
             </Grid>
           </Box>
 
-          <TableContainer>
-            <Table sx={{ minWidth: 650 }}>
+          <TableContainer sx={{ overflowX: 'auto' }}>
+            <Table sx={{ minWidth: { xs: 300, sm: 650 } }}>
               <TableHead>
                 <TableRow>
                   <TableCell>
