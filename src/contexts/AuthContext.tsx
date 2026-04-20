@@ -105,7 +105,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } else {
       dispatch({ type: AUTH_TYPES.FINISH_LOADING });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = (

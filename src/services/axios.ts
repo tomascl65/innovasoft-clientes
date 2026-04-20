@@ -31,7 +31,7 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response) {
       // Error 401 - No autorizado, limpiar sesión
-      // Excluir la ruta de login: un 401 ahí significa credenciales incorrectas,
+      // Excluir la ruta de login: un 401 significa credenciales incorrectas,
       // no una sesión expirada, así que no debe redirigir.
       const requestUrl = (error.config?.url || '').toLowerCase();
       const isLoginRequest = requestUrl.includes('authenticate/login');

@@ -153,7 +153,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile
+            keepMounted: true, // Mejor rendimiento en móviles
           }}
           sx={{
             display: { xs: 'block', md: 'none' },
