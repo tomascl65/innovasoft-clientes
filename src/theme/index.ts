@@ -102,15 +102,15 @@ const theme: Theme = createTheme({
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {
-          textTransform: 'none',
-          fontWeight: 500,
-        },
         contained: {
           boxShadow: 'none',
           '&:hover': {
             boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.08)',
           },
+        },
+        root: {
+          textTransform: 'none',
+          fontWeight: 500,
         },
       },
     },

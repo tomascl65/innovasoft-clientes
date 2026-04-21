@@ -19,7 +19,7 @@ const Home: React.FC = () => {
               marginBottom: 2,
             }}
           >
-            Bienvenido
+            ¡Bienvenido!
           </Typography>
           <Typography variant="h6" color="text.secondary">
             Sistema de Gestión de Clientes

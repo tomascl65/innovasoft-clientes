@@ -1,4 +1,4 @@
-// Declaraciones para módulos CSS
+// Declaraciones para los módulos CSS
 declare module '*.css' {
   const content: { [className: string]: string };
   export default content;

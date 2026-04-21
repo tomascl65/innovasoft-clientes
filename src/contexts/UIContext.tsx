@@ -85,7 +85,9 @@ export const UIProvider = ({ children }: UIProviderProps) => {
   ) => {
     dispatch({
       type: UI_TYPES.SHOW_SNACKBAR,
-      payload: { message, severity },
+      payload: {
+        message, severity
+      },
     });
   };
 

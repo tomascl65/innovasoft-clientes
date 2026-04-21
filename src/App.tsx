@@ -1,8 +1,8 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
-import ConfirmDialog from './components/common/ConfirmDialog';
 import GlobalSnackbar from './components/common/GlobalSnackbar';
+import ConfirmDialog from './components/common/ConfirmDialog';
 import PrivateRoute from './components/common/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';

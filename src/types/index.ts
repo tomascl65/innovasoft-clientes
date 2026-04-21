@@ -98,7 +98,7 @@ export interface UIContextType extends UIState {
   hideDialog: () => void;
 }
 
-// Tipos para formularios
+// Tipos para los formularios
 export interface FormData {
   [key: string]: string;
 }
