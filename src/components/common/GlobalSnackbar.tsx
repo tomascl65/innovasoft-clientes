@@ -21,7 +21,7 @@ const GlobalSnackbar: React.FC = () => {
     hideSnackbar();
   };
 
-  const handleAlertClose = (event: SyntheticEvent) => {
+  const handleAlertClose = (_event: SyntheticEvent) => {
     hideSnackbar();
   };
 

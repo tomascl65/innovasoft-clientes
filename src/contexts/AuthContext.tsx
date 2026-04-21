@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     userId: number,
     username: string,
     expiration: string,
-    rememberMe: boolean = false
+    rememberMe = false
   ) => {
     const storage = rememberMe ? localStorage : sessionStorage;
 

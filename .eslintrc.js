@@ -58,7 +58,7 @@ module.exports = {
     'prefer-const': 'error',
     'no-var': 'error',
     eqeqeq: ['error', 'always', { null: 'ignore' }],
-    quotes: 'on',
+    quotes: 'off',
   },
   settings: {
     react: {
